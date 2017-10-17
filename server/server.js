@@ -1,0 +1,20 @@
+var app = require('express')();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
+app.get('/', function(req, res){
+  res.sendFile(__dirname+'/index.html');
+});
+
+io.on('connection', (socket) => {
+    console.log('User connected');
+    socket.on('form-submit', (msg) =>{
+        console.log('User submited info:');
+        console.log(msg);
+        // check if user exists
+    });
+});
+
+http.listen(3000, function(){
+  console.log('listening on *:3000');
+});

@@ -1,0 +1,12 @@
+{
+  "name": "login-part",
+  "version": "1.0.0",
+  "description": "user login via socket.io",
+  "main": "index.js",
+  "author": "Dmitry Ch",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.2",
+    "socket.io": "^2.0.3"
+  }
+}
