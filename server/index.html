@@ -14,21 +14,38 @@
             <br>
             <input type="submit" name="submit"><br>
         </form>
+        <div id="system-message">
+        </div>
         <script src="/socket.io/socket.io.js"></script>
         <script>
           var socket = io();
         </script>
         <script>
             var form = document.getElementById('signIn');
+            var systemMessage = document.getElementById('system-message');
+            var inputField=document.getElementById('login');
+            inputField.addEventListener('focus', function (e) {
+                console.log('focus ebent on Login field');
+                var child = document.getElementById('message-node');
+                // systemMessage.removeChild(child);
+            });
             form.addEventListener('submit', function (e) {
                 e.preventDefault();
                 var login = document.getElementById('login').value;
                 var passw = document.getElementById('password').value;
                 socket.emit('form-submit', {
-                    "login": login,
+                    "userName": login,
                     "password": passw
                 });
                 form.reset();
+            });
+            socket.on('login-message', function(msg){
+                console.log(msg);
+                var messageNode = document.createElement('p');
+                messageNode.setAttribute('id', 'message-node');
+                var textNode = document.createTextNode(msg);
+                messageNode.appendChild(textNode);
+                systemMessage.appendChild(messageNode);
             });
             
         </script>

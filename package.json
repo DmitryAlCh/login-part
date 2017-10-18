@@ -6,6 +6,7 @@
   "author": "Dmitry Ch",
   "license": "MIT",
   "dependencies": {
+    "chalk": "^2.2.0",
     "express": "^4.16.2",
     "socket.io": "^2.0.3"
   }
