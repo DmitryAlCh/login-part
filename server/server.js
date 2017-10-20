@@ -1,41 +1,67 @@
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+const express = require('express');
+const app = express();
+const cookieParser = require('cookie-parser');
+const chalk = require('chalk');
+
+
+const bodyParser = require('body-parser');
 const {getRegisteredUsers} = require('./utils/get-registered-users');
 const {findEntry} = require('./utils/find-user');
+const {compareCookies} = require('./utils/compare-cookies');
 
+const signInCookie = {
+  "name": "session",
+  "value": "jhfbdjhfbdhgfvdhgfv"
+};
 
 server = async () => {
   let LocalUsers = await getRegisteredUsers(__dirname+'/users.txt');
-  
+  requireLogin = (req, res, next) => {
+    let onlineCookie=req.cookies;
+    if (compareCookies(signInCookie, onlineCookie)) {
+      next();
+    } else {
+      res.status(401).sendFile(__dirname + '/views/invalid-password.html');
+    }
+        
+  }
+  app.use(bodyParser.urlencoded({extended: true}));
+  app.use(cookieParser());
+
   app.get('/', function(req, res){
+    res.cookie("randomName","RandomValue", {maxAge: 36000});
     res.sendFile(__dirname+'/index.html');
+  });
+
+  app.all('/login/*', requireLogin, function(req, res, next) {
+    next();
+  });
+
+  app.post('/login', async function(req, res) {
+   
+    console.log(req.body.login);
+    let user = req.body.login[0];
+    let passw = req.body.login[1]
+    let registeredUsers = await getRegisteredUsers(__dirname + '/users.txt');
+    let foundRegUser = await findEntry(user, registeredUsers);
+    if (!foundRegUser){
+      res.status(401).sendFile(__dirname + '/views/user-not-found.html');  
+    } else {
+      if (foundRegUser.password!=passw){
+        res.status(401).sendFile(__dirname + '/views/invalid-password.html');  
+      } else {
+        res.cookie(signInCookie.name,signInCookie.value, {maxAge: 36000});
+        res.redirect('/login/data');
+      } 
+    }
+
+    app.get('/login/data', async function(req, res) {
+      res.sendFile(__dirname + "/views/data.html");
+    });
+    
   });
   
-  io.on('connection', async (socket) => {
-    console.log('User connected');
-    socket.on('form-submit', async (msg) => {
-      console.log('User submited info:');
-      console.log(msg);
-      // check if user exists
-      let existingUser = await findEntry(msg.userName, LocalUsers);
-      if (!existingUser) {
-        console.log('User not found')
-        io.emit('login-message', 'User not found');
-      } else {
-        // check for password
-        if (msg.password != existingUser.password){
-          io.emit('login-message', 'incorrect password');
-        } else {
-          io.emit('login-message', 'succesfully loged in');
-        }
-      }  
-    });
-  });
-  app.get('/signed', function(req,res) {
-    res.sendFile(__dirname+'/index.html');
-  });
-  http.listen(3000, function(){
+    app.listen(3000, function(){
     console.log('listening on *:3000');
   });
 }

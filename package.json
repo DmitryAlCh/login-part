@@ -6,7 +6,9 @@
   "author": "Dmitry Ch",
   "license": "MIT",
   "dependencies": {
+    "body-parser": "^1.18.2",
     "chalk": "^2.2.0",
+    "cookie-parser": "^1.4.3",
     "express": "^4.16.2",
     "socket.io": "^2.0.3"
   }

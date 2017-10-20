@@ -5,14 +5,22 @@
         <title>User Login</title>
     </header>
     <body>
-        <h1>Login here</h1>
-        <form id = "signIn">
-            Login<br>
-            <input type="text" name="login" id="login" required><br>
-            Password<br>
-            <input type="password" name="password" id="password" required><br>
-            <br>
-            <input type="submit" name="submit"><br>
+        <form id = "signIn" action = "/login" method="POST">
+            <fieldset>
+                <legend>Please login</legend>
+                <p>
+                    <label for="login">Enter username:</label>
+                    <input type="text" name="login" value="your username" id="login">                    
+                </p>
+                <p>
+                    <label for="password">Enter password:</label>
+                    <input type="password" name="login" value="password" id="password">                    
+                </p>
+                <p>
+                    <label for="submit">Submit</label>
+                    <input type="submit" name="submit" id="submit"> 
+                </p>
+            </fieldset>
         </form>
         <div id="system-message">
         </div>
@@ -30,7 +38,7 @@
                 // systemMessage.removeChild(child);
             });
             form.addEventListener('submit', function (e) {
-                e.preventDefault();
+                // e.preventDefault();
                 var login = document.getElementById('login').value;
                 var passw = document.getElementById('password').value;
                 socket.emit('form-submit', {
